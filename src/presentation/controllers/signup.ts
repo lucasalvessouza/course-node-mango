@@ -17,6 +17,15 @@ export class SignUpController implements Controller {
       }
     }
 
+    const {
+      password,
+      passwordConfirmation
+    } = httpRequest.body
+
+    if (password !== passwordConfirmation) {
+      return badRequest(new InvalidParamsError('passwordConfirmation'))
+    }
+
     try {
       const emailIsValid = this.emailValidator.isValid(httpRequest.body.email)
 
