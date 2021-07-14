@@ -1,9 +1,13 @@
 import { Encrypter } from './db-add-account-protocols'
 import { DbAddAccount } from './db-add-account'
+import { AddAccountModel } from '../../domain/usecases/addAccount'
+import { AccountModel } from '../../domain/models/account'
+import { AddAccountRepository } from '../protocols/add-account-repository'
 
 interface SutTypes {
   sut: DbAddAccount
   encrypterStub: Encrypter
+  addAccountRepositoryStub: AddAccountRepository
 }
 
 const makeEncrypter = (): Encrypter => {
@@ -16,14 +20,31 @@ const makeEncrypter = (): Encrypter => {
   return new EncrypterStub()
 }
 
+const makeAddAccountRepository = (): AddAccountRepository => {
+  class AddAccountRepository {
+    async add (accountData: AddAccountModel): Promise<AccountModel> {
+      return new Promise(resolve => resolve({
+        id: 'valid_id',
+        name: 'valid_name',
+        email: 'valid_email',
+        password: 'hashed_password'
+      }))
+    }
+  }
+
+  return new AddAccountRepository()
+}
+
 const makeSut = (): SutTypes => {
   const encrypterStub = makeEncrypter()
+  const addAccountRepositoryStub = makeAddAccountRepository()
 
-  const sut = new DbAddAccount(encrypterStub)
+  const sut = new DbAddAccount(encrypterStub, addAccountRepositoryStub)
 
   return {
     sut,
-    encrypterStub
+    encrypterStub,
+    addAccountRepositoryStub
   }
 }
 
@@ -64,5 +85,27 @@ describe('DbAddAccount Usecase', () => {
     const promise = sut.add(accountData)
 
     await expect(promise).rejects.toThrow()
+  })
+
+  test('should call AddAccountRepository with correct values', async () => {
+    const {
+      sut,
+      addAccountRepositoryStub
+    } = makeSut()
+
+    const addAccountRepositorySpy = jest.spyOn(addAccountRepositoryStub, 'add')
+
+    const accountData = {
+      name: 'valid_name',
+      email: 'valid_email',
+      password: 'valid_password'
+    }
+    await sut.add(accountData)
+
+    expect(addAccountRepositorySpy).toHaveBeenCalledWith({
+      name: 'valid_name',
+      email: 'valid_email',
+      password: 'hashed_password'
+    })
   })
 })
