@@ -4,12 +4,6 @@ import { LogControllerDecorator } from './log'
 import { LogErrorRepository } from '../../data/protocols/log-error.repository'
 import { AccountModel } from '../../domain/models/account'
 
-interface StubType {
-  sut: LogControllerDecorator
-  controllerStub: Controller
-  logErrorRepositoryStub: LogErrorRepository
-}
-
 const makeControllerStub = (): Controller => {
   class ControllerStub implements Controller {
     async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
@@ -26,18 +20,6 @@ const makeLogErrorRepositoryStub = (): LogErrorRepository => {
     }
   }
   return new LogErrorRepositoryStub()
-}
-
-const makeSut = (): StubType => {
-  const controllerStub = makeControllerStub()
-  const logErrorRepositoryStub = makeLogErrorRepositoryStub()
-  const sut = new LogControllerDecorator(controllerStub, logErrorRepositoryStub)
-
-  return {
-    sut,
-    controllerStub,
-    logErrorRepositoryStub
-  }
 }
 
 const makeFakeRequest = (): HttpRequest => ({
@@ -60,6 +42,23 @@ const makeFakeServerError = (): HttpResponse => {
   const fakeError = new Error()
   fakeError.stack = 'any_stack'
   return serverError(fakeError)
+}
+interface StubType {
+  sut: LogControllerDecorator
+  controllerStub: Controller
+  logErrorRepositoryStub: LogErrorRepository
+}
+
+const makeSut = (): StubType => {
+  const controllerStub = makeControllerStub()
+  const logErrorRepositoryStub = makeLogErrorRepositoryStub()
+  const sut = new LogControllerDecorator(controllerStub, logErrorRepositoryStub)
+
+  return {
+    sut,
+    controllerStub,
+    logErrorRepositoryStub
+  }
 }
 
 describe('LogController decorator', () => {

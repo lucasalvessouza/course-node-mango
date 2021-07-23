@@ -9,12 +9,6 @@ import { SignUpController } from './signup'
 import { HttpRequest } from '../../protocols'
 import { badRequest, ok, serverError } from '../../helpers/http-helper'
 
-interface SutTypes {
-  sut: SignUpController
-  emailValidatorStub: EmailValidator
-  addAccountStub: AddAccount
-}
-
 const makeEmailValidator = (): EmailValidator => {
   class EmailValidatorStub implements EmailValidator {
     isValid (email: string): boolean {
@@ -49,6 +43,11 @@ const makeAddAccount = (): AddAccount => {
   }
 
   return new AddAccountStub()
+}
+interface SutTypes {
+  sut: SignUpController
+  emailValidatorStub: EmailValidator
+  addAccountStub: AddAccount
 }
 
 const makeSut = (): SutTypes => {
