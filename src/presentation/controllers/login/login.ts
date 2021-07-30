@@ -33,9 +33,7 @@ export class LoginController implements Controller {
 
       const emailIsValid = this.emailValidator.isValid(email)
       if (!emailIsValid) {
-        return new Promise(resolve => resolve(
-          badRequest(new InvalidParamsError('email')))
-        )
+        return badRequest(new InvalidParamsError('email'))
       }
 
       await this.authentication.auth(email, password)
