@@ -1,23 +1,27 @@
 import { MissingParamError } from '../../errors'
 import { RequiredFieldValidation } from './required-field-validation'
 
+const makeSut = (): RequiredFieldValidation => {
+  return new RequiredFieldValidation('field')
+}
+
 describe('Required field Validation', () => {
   test('should throw a MissingParamError if a required field not is provided', async () => {
-    const sut = new RequiredFieldValidation('email')
+    const sut = makeSut()
 
     expect(
       sut.validate({
-        password: '123'
+        anotherField: '123'
       })
-    ).toEqual(new MissingParamError('email'))
+    ).toEqual(new MissingParamError('field'))
   })
 
   test('shouldn\'t return anything if the required field is provided', async () => {
-    const sut = new RequiredFieldValidation('email')
+    const sut = makeSut()
 
     expect(
       sut.validate({
-        email: 'any_email@gmail.com'
+        field: 'any_email@gmail.com'
       })
     ).toBeUndefined()
   })

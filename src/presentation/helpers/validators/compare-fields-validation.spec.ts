@@ -6,7 +6,7 @@ interface SutTypes {
 }
 
 const makeSut = (): SutTypes => {
-  const sut = new CompareFieldsValidation('password', 'passwordConfirmation')
+  const sut = new CompareFieldsValidation('field', 'fieldToCompare')
 
   return {
     sut
@@ -19,10 +19,10 @@ describe('Compare field Validation', () => {
 
     expect(
       sut.validate({
-        password: '123',
-        passwordConfirmation: '1234'
+        field: '123',
+        fieldToCompare: '1234'
       })
-    ).toEqual(new InvalidParamsError('passwordConfirmation'))
+    ).toEqual(new InvalidParamsError('fieldToCompare'))
   })
 
   test('shouldn\'t return anything if the fields are equals', async () => {
@@ -30,8 +30,8 @@ describe('Compare field Validation', () => {
 
     expect(
       sut.validate({
-        password: '123',
-        passwordConfirmation: '123'
+        field: '123',
+        fieldToCompare: '123'
       })
     ).toBeUndefined()
   })
